@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AIShortFilmz | AI short films and video ads</title>
-  <meta name="description" content="AIShortFilmz makes AI short films and AI video ads, from 5 seconds to 30 minutes. Share your idea and get a quote in 2 hours.">
+  <title>AIShortFilmz | AI short films, video ads and digital assets</title>
+  <meta name="description" content="Ready-made AI short films and video ads, plus downloadable templates, LUTs and sound effects. Checkout with PayPal.">
   <meta name="theme-color" content="#0d1128">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffb43b'/%3E%3Cpath d='M13 9.5v13l10-6.5z' fill='%230d1128'/%3E%3C/svg%3E">
 
@@ -34,11 +34,20 @@
 
       <nav class="site-nav" id="site-nav" aria-label="Main">
         <ul>
-          <li><a href="#services">What we make</a></li>
-          <li><a href="#process">How it works</a></li>
-          <li><a class="btn btn-small" href="#contact">Start a project</a></li>
+          <li><a href="#films">Short films</a></li>
+          <li><a href="#downloads">Digital downloads</a></li>
+          <li><a href="#how">How it works</a></li>
         </ul>
       </nav>
+
+      <button class="cart-toggle" type="button" id="cart-toggle" aria-haspopup="dialog" aria-controls="cart-drawer" aria-label="Open cart, 0 items">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M3 4h2l1.6 10.6a2 2 0 0 0 2 1.7h8.3a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9.5" cy="20" r="1.4" fill="currentColor"/>
+          <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+        </svg>
+        <span class="cart-count" id="cart-count" aria-hidden="true">0</span>
+      </button>
     </div>
   </header>
 
@@ -46,229 +55,124 @@
     <!-- Hero -->
     <section class="hero">
       <div class="container">
-        <h1 class="hero-title" data-enter style="--i:0">AI films and video ads, from 5 seconds to 30 minutes.</h1>
-        <p class="hero-lead" data-enter style="--i:1">
-          Tell us about your story or your business. We write it, make it in the best quality possible, and hand over the finished project along with every asset we used.
+        <p class="hero-eyebrow" data-enter style="--i:0">Ready-made, not custom-quoted</p>
+        <h1 class="hero-title" data-enter style="--i:1">AI short films and video ads, ready to own today.</h1>
+        <p class="hero-lead" data-enter style="--i:2">
+          Browse finished AI short films and ad-ready videos, or grab the templates, LUTs and sound packs our own team edits with. Pick what you need, check out with PayPal, and it's yours.
         </p>
-        <div class="hero-actions" data-enter style="--i:2">
-          <a class="btn" href="#contact">Start your project</a>
-          <a class="text-link" href="#process">See how it works</a>
+        <div class="hero-actions" data-enter style="--i:3">
+          <a class="btn" href="#films">Browse short films</a>
+          <a class="text-link" href="#downloads">See digital downloads</a>
         </div>
-
-        <!-- Length scrubber -->
-        <div class="scrubber" id="scrubber" data-enter style="--i:3; --p:30.44">
-          <div class="scrubber-head">
-            <p class="scrubber-timecode" id="timecode" aria-hidden="true">0:30</p>
-            <div class="scrubber-format">
-              <p class="scrubber-format-name" id="format-name">Video ad</p>
-              <p class="scrubber-format-text" id="format-text">A complete ad with a hook, a message and a call to action.</p>
-            </div>
-          </div>
-
-          <div class="timeline">
-            <div class="timeline-track" aria-hidden="true">
-              <div class="timeline-clip"></div>
-            </div>
-            <input
-              class="timeline-range"
-              id="length"
-              type="range"
-              min="0"
-              max="100"
-              step="any"
-              value="30.44"
-              aria-label="Project length"
-            >
-            <ol class="timeline-ticks">
-              <li style="--p:0"><button type="button" data-seconds="5" aria-label="Set length to 5 seconds">5s</button></li>
-              <li style="--p:18.66" class="tick-minor"><button type="button" data-seconds="15" aria-label="Set length to 15 seconds">15s</button></li>
-              <li style="--p:30.44"><button type="button" data-seconds="30" aria-label="Set length to 30 seconds">30s</button></li>
-              <li style="--p:42.22"><button type="button" data-seconds="60" aria-label="Set length to 1 minute">1m</button></li>
-              <li style="--p:69.56"><button type="button" data-seconds="300" aria-label="Set length to 5 minutes">5m</button></li>
-              <li style="--p:81.34" class="tick-minor"><button type="button" data-seconds="600" aria-label="Set length to 10 minutes">10m</button></li>
-              <li style="--p:100"><button type="button" data-seconds="1800" aria-label="Set length to 30 minutes">30m</button></li>
-            </ol>
-          </div>
-          <p class="scrubber-hint">Drag the playhead to see what fits your length.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- What we make -->
-    <section class="section" id="services">
-      <div class="container">
-        <div class="section-head">
-          <h2>What we make</h2>
-          <p>Ads that promote your business and films that tell your stories. One team makes both.</p>
-        </div>
-
-        <ul class="offers">
-          <li class="offer">
-            <h3>AI video ads</h3>
-            <p>Short, sharp videos that promote your product, brand or service. We make them from 5 seconds long, in the format your customers watch.</p>
-            <ul class="offer-points">
-              <li>Product and brand ads</li>
-              <li>Clips for social media</li>
-              <li>Built around your message</li>
-            </ul>
-          </li>
-          <li class="offer">
-            <h3>AI short films</h3>
-            <p>Original stories with characters, scenes and a script written by our story team. We make films up to 30 minutes long.</p>
-            <ul class="offer-points">
-              <li>Story and script writing</li>
-              <li>Films up to 30 minutes</li>
-              <li>Your idea, our story team</li>
-            </ul>
-          </li>
-          <li class="offer">
-            <h3>Anything in between</h3>
-            <p>Not sure which one you need? We are open to any project between 5 seconds and 30 minutes. Tell us what you have in mind and we will size it for you.</p>
-            <ul class="offer-points">
-              <li>Extended ads and brand stories</li>
-              <li>Any length you need</li>
-              <li>Quote in 2 hours</li>
-            </ul>
-          </li>
+        <ul class="hero-trust" data-enter style="--i:4">
+          <li>Secure checkout with PayPal</li>
+          <li>Instant delivery on downloads</li>
+          <li>Commercial license included</li>
         </ul>
       </div>
     </section>
 
-    <!-- Collaboration process -->
-    <section class="section section-alt" id="process">
-      <div class="container process-layout">
-        <div class="process-intro">
-          <h2>How we work together</h2>
-          <p>Seven simple steps, from your first message to your finished project.</p>
-
-          <dl class="terms">
-            <div>
-              <dt>Quote in 2 hours</dt>
-              <dd>After your briefing, you get the price and the delivery date within 2 hours.</dd>
-            </div>
-            <div>
-              <dt>Pay in two parts</dt>
-              <dd>50% to start. The remaining 50% when you confirm the draft.</dd>
-            </div>
-            <div>
-              <dt>You own everything</dt>
-              <dd>You receive the full project and all the assets used to make it.</dd>
-            </div>
-          </dl>
+    <!-- AI Short Films -->
+    <section class="section" id="films">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Catalog</p>
+          <h2>AI short films &amp; video ads</h2>
+          <p>Finished films and ad-ready clips, made with AI and licensed for your use. Sample listings below &mdash; swap in your own titles, prices and preview stills.</p>
         </div>
-
-        <ol class="steps">
-          <li class="step">
-            <span class="step-number" aria-hidden="true">1</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 1: </span>Fill in the form</h3>
-              <p>Share your name and email in the form on this page. Add your WhatsApp number too if you would like to chat there. It takes less than a minute.</p>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">2</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 2: </span>Brief our story team</h3>
-              <p>Our story writing team contacts you on WhatsApp or email. Share your idea, your goals and anything you want to see on screen.</p>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">3</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 3: </span>Get your quote</h3>
-              <p>Once you share the project briefing, we assess what your project needs and send you the price. Your quote also includes the delivery date.</p>
-              <span class="step-tag">Within 2 hours</span>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">4</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 4: </span>Pay the advance</h3>
-              <p>We take 50% of the quoted price as an advance. Our team starts working on your project right after.</p>
-              <span class="step-tag">50% advance</span>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">5</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 5: </span>We create your project</h3>
-              <p>We aim to finish at the earliest possible day. You already know your delivery date from the quote, so you can plan around it.</p>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">6</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 6: </span>Review the draft, then receive everything</h3>
-              <p>We email you a draft. Once you confirm it and pay the remaining amount, we send the whole project with all the assets used. That makes you the sole owner of the project.</p>
-              <span class="step-tag">Remaining 50%</span>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step-number" aria-hidden="true">7</span>
-            <div class="step-body">
-              <h3><span class="sr-only">Step 7: </span>Say thanks and share feedback</h3>
-              <p>We thank you and ask for your feedback by email or WhatsApp, so every project we make is better than the last.</p>
-            </div>
-          </li>
-        </ol>
+        <div class="product-grid" id="films-grid"></div>
       </div>
     </section>
 
-    <!-- Contact -->
-    <section class="section" id="contact">
-      <div class="container contact-layout">
-        <div class="contact-copy">
-          <h2>Start your project</h2>
-          <p>Share your details and our story team will contact you on WhatsApp or email to hear about your idea.</p>
-          <p class="contact-next">After the briefing, you will have your price and delivery date within 2 hours.</p>
+    <!-- Digital downloads -->
+    <section class="section section-alt" id="downloads">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Catalog</p>
+          <h2>Digital downloads</h2>
+          <p>Templates, LUTs and sound packs we use in our own edits, bundled for you to download and use right away.</p>
+        </div>
+        <div class="product-grid" id="downloads-grid"></div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-eyebrow">Checkout</p>
+          <h2>How buying works</h2>
+          <p>Every order, film or download, goes through the same three steps.</p>
         </div>
 
-        <div class="form-panel">
-          <form class="form" id="contact-form" novalidate>
-            <div class="field">
-              <label for="name">Name</label>
-              <input id="name" name="name" type="text" autocomplete="name" required aria-describedby="name-error">
-              <p class="field-error" id="name-error" aria-live="polite"></p>
-            </div>
-
-            <div class="field">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-error">
-              <p class="field-error" id="email-error" aria-live="polite"></p>
-            </div>
-
-            <div class="field">
-              <label for="whatsapp">WhatsApp number (optional)</label>
-              <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 010 0199" aria-describedby="whatsapp-hint whatsapp-error">
-              <p class="field-hint" id="whatsapp-hint">Add it if you want to chat on WhatsApp. Include your country code.</p>
-              <p class="field-error" id="whatsapp-error" aria-live="polite"></p>
-            </div>
-
-            <!-- Spam trap: real visitors never see or fill this in -->
-            <div class="hp" aria-hidden="true">
-              <label for="company">Company</label>
-              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
-            </div>
-
-            <button class="btn btn-block" type="submit" id="submit-btn">Send my details</button>
-            <p class="form-status" id="form-status" role="status"></p>
-          </form>
-
-          <div class="form-success" id="form-success" tabindex="-1" hidden>
-            <h3>Thanks, <span id="success-name"></span>.</h3>
-            <p id="success-message">Your details are in. Our story team will contact you on WhatsApp or email to brief your project.</p>
-          </div>
-        </div>
+        <ol class="how-steps">
+          <li>
+            <span class="how-number" aria-hidden="true">1</span>
+            <h3>Add to cart</h3>
+            <p>Pick any mix of films and downloads. Your cart stays saved if you leave and come back.</p>
+          </li>
+          <li>
+            <span class="how-number" aria-hidden="true">2</span>
+            <h3>Pay with PayPal</h3>
+            <p>Checkout is PayPal only, so you can pay with a PayPal balance, a linked bank account, or a card through PayPal's own checkout.</p>
+          </li>
+          <li>
+            <span class="how-number" aria-hidden="true">3</span>
+            <h3>Get your files</h3>
+            <p>Downloads unlock on the confirmation screen right away. Short films are emailed to you within 24 hours.</p>
+          </li>
+        </ol>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>&copy; <span id="year">2026</span> AIShortFilmz</p>
+      <p>&copy; <span id="year">2026</span> AIShortFilmz &mdash; checkout secured by PayPal</p>
       <a href="#top" data-scroll-top>Back to top</a>
     </div>
   </footer>
+
+  <!-- Cart drawer -->
+  <div class="cart-overlay" id="cart-overlay" hidden></div>
+  <aside class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" hidden>
+    <div class="cart-head">
+      <h2 id="cart-title">Your cart</h2>
+      <button type="button" class="cart-close" id="cart-close" aria-label="Close cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="cart-scroll" id="cart-scroll">
+      <ul class="cart-items" id="cart-items"></ul>
+      <p class="cart-empty" id="cart-empty">Your cart is empty. Add a short film or a download to get started.</p>
+
+      <div class="cart-checkout">
+        <div class="cart-subtotal">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">$0.00</span>
+        </div>
+        <div id="paypal-button-container" class="paypal-slot"></div>
+        <p class="cart-note" id="cart-note">Checkout is available only through PayPal.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Order confirmation -->
+  <div class="modal-overlay" id="confirm-overlay" hidden></div>
+  <div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" tabindex="-1" hidden>
+    <button type="button" class="modal-close" id="confirm-close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+        <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <h2 id="confirm-title">Payment received</h2>
+    <p id="confirm-sub">Order <strong id="confirm-id"></strong> is confirmed.</p>
+    <ul class="confirm-items" id="confirm-items"></ul>
+    <p class="confirm-footnote">A receipt was sent by PayPal to your email address.</p>
+  </div>
 
   <script src="script.js" defer></script>
 </body>

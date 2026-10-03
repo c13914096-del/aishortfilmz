@@ -1,34 +1,128 @@
 'use strict';
 
 /* ==========================================================================
-   AIShortFilmz
+   AIShortFilmz — store
    ========================================================================== */
 
 const CONFIG = {
-  // Where form submissions are sent. The service emails each submission to your inbox.
-  // Your email address is set in the service's dashboard, so it never appears on this site.
-  //
-  // Option A: Formspree (https://formspree.io)
-  //   Create a form, then paste its URL here, like 'https://formspree.io/f/abcdwxyz'.
-  //
-  // Option B: Web3Forms (https://web3forms.com)
-  //   Set formEndpoint to 'https://api.web3forms.com/submit' and paste your access key below.
-  //
-  // Left empty, the form runs in demo mode: it shows the thank-you message
-  // but does not send the details anywhere.
-  formEndpoint: '',
+  // Your PayPal REST app's Client ID (developer.paypal.com → Apps & Credentials).
+  // 'sb' is PayPal's shared sandbox ID: buttons render and fake-pay for testing,
+  // but money never moves. Replace it with your own Client ID before launch —
+  // use a Sandbox app's ID while testing, then your Live app's ID to go live.
+  paypalClientId: 'BAAs9lBUgX_ykXB4-Dcv45PSaVHZuKCxy9A46O5YIQ-tX12Lvkd1Ol9h734O4LhNVabHgy5gkH9ilULbvU',
+  currency: 'USD',
 
-  // Only needed for Web3Forms. Leave empty for Formspree.
-  accessKey: '',
-
-  // The subject line of the email you receive.
-  emailSubject: 'New AIShortFilmz project enquiry',
+  // IMPORTANT: this page captures payment entirely in the browser. That's
+  // enough to take real PayPal payments, but a visitor with developer tools
+  // open could trigger the "payment received" screen without paying. Fine
+  // for a first launch; before relying on this for real digital-download
+  // delivery, verify each payment server-side (PayPal's Orders API) before
+  // revealing download links.
 };
+
+/* ---------- Catalog (dummy data — replace with your own titles, prices, art) ---------- */
+const PRODUCTS = [
+  {
+    id: 'film-neon-skyline',
+    category: 'films',
+    badge: 'Short film',
+    duration: '2:40',
+    name: 'Neon Skyline',
+    description: 'A rain-lit chase through a synthetic city, told without a single word of dialogue.',
+    price: 49,
+    deliveryNote: 'Delivered by email within 24 hours, as a 4K file plus a commercial license.',
+  },
+  {
+    id: 'film-last-letter',
+    category: 'films',
+    badge: 'Short film',
+    duration: '4:55',
+    name: 'The Last Letter',
+    description: 'A quiet family drama about a letter that arrives forty years too late.',
+    price: 69,
+    deliveryNote: 'Delivered by email within 24 hours, as a 4K file plus a commercial license.',
+  },
+  {
+    id: 'film-coffee-dreams',
+    category: 'films',
+    badge: 'Video ad',
+    duration: '0:15',
+    name: 'Coffee Dreams',
+    description: 'A warm, fast-cut product ad built for a café brand — easy to re-badge as your own.',
+    price: 29,
+    deliveryNote: 'Delivered by email within 24 hours, as a 4K file plus a commercial license.',
+  },
+  {
+    id: 'film-mountain-escape',
+    category: 'films',
+    badge: 'Video ad',
+    duration: '0:30',
+    name: 'Mountain Escape',
+    description: 'A travel-brand ad built around a single sweeping mountain shot and a clear call to action.',
+    price: 39,
+    deliveryNote: 'Delivered by email within 24 hours, as a 4K file plus a commercial license.',
+  },
+  {
+    id: 'download-lut-pack',
+    category: 'downloads',
+    badge: 'LUT pack',
+    format: '.cube',
+    name: 'Cinematic LUT Pack',
+    description: '20 color-grading presets for teal-and-amber, muted drama, and warm sunlit looks.',
+    price: 19,
+    deliveryNote: 'Unlocks instantly on the confirmation screen.',
+  },
+  {
+    id: 'download-poster-templates',
+    category: 'downloads',
+    badge: 'Templates',
+    format: '.psd',
+    name: 'Film Poster Template Pack',
+    description: '10 layered Photoshop poster templates, built for quick title and credit swaps.',
+    price: 15,
+    deliveryNote: 'Unlocks instantly on the confirmation screen.',
+  },
+  {
+    id: 'download-titles-pack',
+    category: 'downloads',
+    badge: 'Motion pack',
+    format: '.aep',
+    name: 'Title Card & Lower Thirds Pack',
+    description: '15 animated After Effects title cards and lower thirds, ready to re-type and render.',
+    price: 25,
+    deliveryNote: 'Unlocks instantly on the confirmation screen.',
+  },
+  {
+    id: 'download-sound-fx',
+    category: 'downloads',
+    badge: 'Sound pack',
+    format: '.wav',
+    name: 'Sound FX Bundle',
+    description: '40 whooshes, impacts and transitions for trailers, ads and title sequences.',
+    price: 12,
+    deliveryNote: 'Unlocks instantly on the confirmation screen.',
+  },
+];
+
+const PRODUCTS_BY_ID = new Map(PRODUCTS.map((product) => [product.id, product]));
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const money = (amount) => `$${amount.toFixed(2)}`;
+
+/* A different soft gradient per product, by category + a small hash, so
+   every thumbnail looks distinct without needing real artwork yet. */
+function thumbGradient(product) {
+  const hues = { films: [262, 318], downloads: [28, 48] };
+  const [a, b] = hues[product.category] || [220, 260];
+  let hash = 0;
+  for (const char of product.id) hash = (hash * 31 + char.charCodeAt(0)) % 360;
+  const h1 = (a + (hash % 30)) % 360;
+  const h2 = (b + (hash % 40)) % 360;
+  return `linear-gradient(135deg, hsl(${h1} 70% 72%), hsl(${h2} 75% 65%))`;
+}
 
 /* ---------- Footer year ---------- */
 function initYear() {
@@ -47,14 +141,10 @@ function initNav() {
     nav.classList.toggle('is-open', open);
   };
 
-  toggle.addEventListener('click', () => {
-    setOpen(toggle.getAttribute('aria-expanded') !== 'true');
-  });
-
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   nav.addEventListener('click', (event) => {
     if (event.target.closest('a')) setOpen(false);
   });
-
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && nav.classList.contains('is-open')) {
       setOpen(false);
@@ -63,287 +153,16 @@ function initNav() {
   });
 }
 
-/* ---------- Length scrubber ---------- */
-function initScrubber() {
-  const root = $('#scrubber');
-  const range = $('#length');
-  if (!root || !range) return;
-
-  const timecodeEl = $('#timecode');
-  const nameEl = $('#format-name');
-  const textEl = $('#format-text');
-
-  // The slider is logarithmic, so short lengths get as much room as long ones.
-  const MIN_SECONDS = 5;
-  const MAX_SECONDS = 1800;
-  const RATIO = MAX_SECONDS / MIN_SECONDS;
-
-  const FORMATS = [
-    { max: 15, name: 'Social clip', text: 'A quick teaser or product highlight, made for feeds and stories.' },
-    { max: 60, name: 'Video ad', text: 'A complete ad with a hook, a message and a call to action.' },
-    { max: 300, name: 'Extended ad or brand story', text: 'Room to tell the story behind your product, service or brand.' },
-    { max: Infinity, name: 'Short film', text: 'A full story with characters, scenes and a script from our story team.' },
-  ];
-
-  const toSeconds = (position) => MIN_SECONDS * Math.pow(RATIO, position / 100);
-  const toPosition = (seconds) => (100 * Math.log(seconds / MIN_SECONDS)) / Math.log(RATIO);
-
-  // Round to friendly values so the timecode never shows odd numbers like 0:47
-  const snap = (seconds) => {
-    let value;
-    if (seconds < 30) value = Math.round(seconds);
-    else if (seconds < 120) value = Math.round(seconds / 5) * 5;
-    else if (seconds < 600) value = Math.round(seconds / 15) * 15;
-    else value = Math.round(seconds / 60) * 60;
-    return Math.min(Math.max(value, MIN_SECONDS), MAX_SECONDS);
-  };
-
-  const formatTimecode = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
-  };
-
-  const speak = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const rest = seconds % 60;
-    const parts = [];
-    if (minutes) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-    if (rest) parts.push(`${rest} ${rest === 1 ? 'second' : 'seconds'}`);
-    return parts.join(' ');
-  };
-
-  let currentFormat = null;
-
-  const render = () => {
-    const position = Number(range.value);
-    const seconds = snap(toSeconds(position));
-    const format = FORMATS.find((item) => seconds <= item.max);
-
-    root.style.setProperty('--p', position);
-    timecodeEl.textContent = formatTimecode(seconds);
-
-    if (format !== currentFormat) {
-      nameEl.textContent = format.name;
-      textEl.textContent = format.text;
-      currentFormat = format;
-    }
-
-    range.setAttribute('aria-valuetext', `${speak(seconds)}, ${format.name}`);
-  };
-
-  // Intro: the playhead sweeps out to its starting length once. Any input from the visitor cancels it.
-  let frame = null;
-  let interrupted = false;
-
-  const interrupt = () => {
-    interrupted = true;
-    if (frame) cancelAnimationFrame(frame);
-    frame = null;
-  };
-
-  const sweep = (target) => {
-    const duration = 1600;
-    const start = performance.now();
-
-    const step = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      range.value = target * eased;
-      render();
-      frame = progress < 1 ? requestAnimationFrame(step) : null;
-    };
-
-    frame = requestAnimationFrame(step);
-  };
-
-  range.addEventListener('pointerdown', interrupt);
-  range.addEventListener('keydown', interrupt);
-  range.addEventListener('input', () => {
-    interrupt();
-    render();
-  });
-
-  $$('[data-seconds]', root).forEach((button) => {
-    button.addEventListener('click', () => {
-      interrupt();
-      range.value = toPosition(Number(button.dataset.seconds));
-      render();
-    });
-  });
-
-  const startValue = Number(range.value);
-
-  if (prefersReducedMotion) {
-    render();
-    return;
-  }
-
-  range.value = 0;
-  render();
-  window.setTimeout(() => {
-    if (!interrupted) sweep(startValue);
-  }, 1000);
-}
-
-/* ---------- Process steps: the timeline fills as you scroll ---------- */
-function initSteps() {
-  const steps = $$('.step');
-  if (!steps.length) return;
-
-  const numbers = steps.map((step) => $('.step-number', step));
-  let ticking = false;
-
-  const update = () => {
-    const anchor = window.innerHeight * 0.6;
-
-    steps.forEach((step, index) => {
-      const box = numbers[index].getBoundingClientRect();
-      const reached = box.top + box.height / 2 <= anchor;
-
-      step.classList.toggle('is-reached', reached);
-      if (index > 0) steps[index - 1].classList.toggle('is-passed', reached);
-    });
-
-    ticking = false;
-  };
-
-  const requestUpdate = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(update);
-  };
-
-  window.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', requestUpdate);
-  update();
-}
-
-/* ---------- Contact form ---------- */
-function initForm() {
-  const form = $('#contact-form');
-  if (!form) return;
-
-  const submitButton = $('#submit-btn');
-  const status = $('#form-status');
-  const success = $('#form-success');
-  const successName = $('#success-name');
-  const successMessage = $('#success-message');
-
-  const fields = {
-    name: {
-      input: $('#name'),
-      error: $('#name-error'),
-      validate: (value) => (value.trim().length >= 2 ? '' : 'Enter your name.'),
-    },
-    email: {
-      input: $('#email'),
-      error: $('#email-error'),
-      validate: (value) =>
-        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())
-          ? ''
-          : 'Enter a valid email address, like name@example.com.',
-    },
-    whatsapp: {
-      input: $('#whatsapp'),
-      error: $('#whatsapp-error'),
-      // Optional: an empty field is fine. If a number is typed, it must look valid.
-      validate: (value) => {
-        const text = value.trim();
-        if (!text) return '';
-        const digits = text.replace(/\D/g, '');
-        const valid = /^[+\d\s().-]+$/.test(text) && digits.length >= 8 && digits.length <= 15;
-        return valid ? '' : 'Enter a valid number with country code, like +1 555 010 0199, or leave this empty.';
-      },
-    },
-  };
-
-  const validateField = (field) => {
-    const message = field.validate(field.input.value);
-    field.error.textContent = message;
-    field.input.setAttribute('aria-invalid', message ? 'true' : 'false');
-    return !message;
-  };
-
-  // Validate when a visitor leaves a field, then keep it live once it has been checked
-  Object.values(fields).forEach((field) => {
-    field.input.addEventListener('blur', () => validateField(field));
-    field.input.addEventListener('input', () => {
-      if (field.input.getAttribute('aria-invalid') === 'true') validateField(field);
-    });
-  });
-
-  const sendLead = async (payload) => {
-    if (!CONFIG.formEndpoint) {
-      console.info('[AIShortFilmz] Demo mode: set CONFIG.formEndpoint in script.js to receive leads.', payload);
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      return;
-    }
-
-    // Web3Forms reads "access_key" and "subject". Formspree reads "_subject".
-    const body = CONFIG.accessKey
-      ? { ...payload, access_key: CONFIG.accessKey, subject: CONFIG.emailSubject }
-      : { ...payload, _subject: CONFIG.emailSubject };
-
-    const response = await fetch(CONFIG.formEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-  };
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    status.textContent = '';
-
-    // Bots fill in the hidden field; people never see it
-    if (form.elements.company.value) return;
-
-    const invalidFields = Object.values(fields).filter((field) => !validateField(field));
-    if (invalidFields.length) {
-      invalidFields[0].input.focus();
-      return;
-    }
-
-    const payload = {
-      name: fields.name.input.value.trim(),
-      email: fields.email.input.value.trim(),
-      whatsapp: fields.whatsapp.input.value.trim() || 'Not provided',
-    };
-
-    submitButton.disabled = true;
-    submitButton.textContent = 'Sending...';
-
-    try {
-      await sendLead(payload);
-      successName.textContent = payload.name.split(' ')[0];
-      successMessage.textContent = fields.whatsapp.input.value.trim()
-        ? 'Your details are in. Our story team will contact you on WhatsApp or email to brief your project.'
-        : 'Your details are in. Our story team will contact you by email to brief your project.';
-      form.hidden = true;
-      success.hidden = false;
-      success.focus();
-    } catch (error) {
-      console.error(error);
-      status.textContent = 'Your details were not sent. Check your connection and try again.';
-      submitButton.disabled = false;
-      submitButton.textContent = 'Send my details';
-    }
-  });
-}
-
-/* ---------- Back to top and logo ---------- */
+/* ---------- Back to top and logo reload ---------- */
 function clearHash() {
   try {
     history.replaceState(null, '', window.location.pathname + window.location.search);
   } catch (error) {
-    // Some embedded previews block this. The scroll still works.
+    // Some embedded previews block this; the scroll still works.
   }
 }
 
 function initPageLinks() {
-  // "Back to top" scrolls all the way up
   $$('[data-scroll-top]').forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
@@ -352,16 +171,320 @@ function initPageLinks() {
     });
   });
 
-  // The logo reloads the site from the top
   $$('[data-reload]').forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
       clearHash();
-      // Browsers restore the scroll position on reload, so jump to the top first.
-      // It must be instant: the page's smooth scrolling would still be moving at reload time.
       window.scrollTo({ top: 0, behavior: 'instant' });
       window.location.reload();
     });
+  });
+}
+
+/* ---------- Product grids ---------- */
+function productCardHTML(product) {
+  const meta = product.category === 'films'
+    ? `<span class="product-duration">${product.duration}</span>`
+    : `<span class="product-duration">${product.format}</span>`;
+
+  return `
+    <article class="product-card">
+      <div class="product-thumb" style="background:${thumbGradient(product)}">
+        <span class="product-badge">${product.badge}</span>
+        ${meta}
+        <span>${product.name}</span>
+      </div>
+      <div class="product-body">
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <div class="product-foot">
+          <span class="product-price">${money(product.price)}</span>
+          <button type="button" class="btn add-to-cart" data-product-id="${product.id}">Add to cart</button>
+        </div>
+      </div>
+    </article>`;
+}
+
+function initGrids() {
+  const filmsGrid = $('#films-grid');
+  const downloadsGrid = $('#downloads-grid');
+  if (filmsGrid) filmsGrid.innerHTML = PRODUCTS.filter((p) => p.category === 'films').map(productCardHTML).join('');
+  if (downloadsGrid) downloadsGrid.innerHTML = PRODUCTS.filter((p) => p.category === 'downloads').map(productCardHTML).join('');
+}
+
+/* ---------- Cart ---------- */
+const Cart = {
+  STORAGE_KEY: 'aishortfilmz:cart',
+
+  read() {
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      const ids = raw ? JSON.parse(raw) : [];
+      // Drop any id that no longer matches a product, so an edited catalog never breaks the cart.
+      return Array.isArray(ids) ? ids.filter((id) => PRODUCTS_BY_ID.has(id)) : [];
+    } catch (error) {
+      return [];
+    }
+  },
+
+  write(ids) {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(ids));
+    } catch (error) {
+      // Private browsing or a full storage quota. The cart still works for this visit.
+    }
+  },
+
+  add(id) {
+    const ids = this.read();
+    if (!ids.includes(id)) this.write([...ids, id]);
+  },
+
+  remove(id) {
+    this.write(this.read().filter((existing) => existing !== id));
+  },
+
+  clear() {
+    this.write([]);
+  },
+
+  items() {
+    return this.read().map((id) => PRODUCTS_BY_ID.get(id));
+  },
+
+  total() {
+    return this.items().reduce((sum, product) => sum + product.price, 0);
+  },
+};
+
+function cartItemHTML(product) {
+  return `
+    <li class="cart-item" data-product-id="${product.id}">
+      <span class="cart-item-thumb" style="background:${thumbGradient(product)}" aria-hidden="true"></span>
+      <span>
+        <span class="cart-item-name">${product.name}</span>
+        <span class="cart-item-price">${money(product.price)}</span>
+      </span>
+      <button type="button" class="cart-item-remove" data-remove-id="${product.id}" aria-label="Remove ${product.name} from cart">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </li>`;
+}
+
+function initCart() {
+  const toggle = $('#cart-toggle');
+  const drawer = $('#cart-drawer');
+  const overlay = $('#cart-overlay');
+  const closeBtn = $('#cart-close');
+  const itemsList = $('#cart-items');
+  const emptyMsg = $('#cart-empty');
+  const subtotalEl = $('#cart-subtotal');
+  const countEl = $('#cart-count');
+  const paypalContainer = $('#paypal-button-container');
+  const note = $('#cart-note');
+
+  if (!toggle || !drawer) return;
+
+  let paypalRendered = false;
+
+  const render = () => {
+    const items = Cart.items();
+
+    itemsList.innerHTML = items.map(cartItemHTML).join('');
+    emptyMsg.classList.toggle('is-visible', items.length === 0);
+    subtotalEl.textContent = money(Cart.total());
+
+    countEl.textContent = String(items.length);
+    countEl.setAttribute('data-empty', String(items.length === 0));
+    toggle.setAttribute('aria-label', `Open cart, ${items.length} item${items.length === 1 ? '' : 's'}`);
+
+    paypalContainer.setAttribute('data-disabled', String(items.length === 0));
+
+    // Render the PayPal buttons once; createOrder reads the live cart at click time,
+    // so the buttons don't need to be rebuilt every time the cart changes.
+    if (!paypalRendered && window.paypal) {
+      renderPaypalButtons();
+    }
+  };
+
+  const open = () => {
+    drawer.hidden = false;
+    overlay.hidden = false;
+    requestAnimationFrame(() => drawer.classList.add('is-open'));
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  };
+
+  const close = () => {
+    drawer.classList.remove('is-open');
+    document.body.style.overflow = '';
+    window.setTimeout(() => {
+      drawer.hidden = true;
+      overlay.hidden = true;
+    }, prefersReducedMotion ? 0 : 320);
+    toggle.focus();
+  };
+
+  toggle.addEventListener('click', () => {
+    render();
+    open();
+  });
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && drawer.classList.contains('is-open')) close();
+  });
+
+  // Add to cart, anywhere on the page
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('.add-to-cart');
+    if (!button) return;
+    Cart.add(button.dataset.productId);
+    render();
+    button.textContent = 'Added';
+    button.setAttribute('data-added', 'true');
+    window.setTimeout(() => {
+      button.textContent = 'Add to cart';
+      button.removeAttribute('data-added');
+    }, 1400);
+  });
+
+  itemsList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-id]');
+    if (!button) return;
+    Cart.remove(button.dataset.removeId);
+    render();
+  });
+
+  function renderPaypalButtons() {
+    paypalRendered = true;
+
+    window.paypal.Buttons({
+      style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+
+      createOrder(data, actions) {
+        const items = Cart.items();
+        const total = items.reduce((sum, product) => sum + product.price, 0).toFixed(2);
+
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: total,
+              currency_code: CONFIG.currency,
+              breakdown: {
+                item_total: { value: total, currency_code: CONFIG.currency },
+              },
+            },
+            items: items.map((product) => ({
+              name: product.name,
+              unit_amount: { value: product.price.toFixed(2), currency_code: CONFIG.currency },
+              quantity: '1',
+              category: 'DIGITAL_GOODS',
+            })),
+          }],
+        });
+      },
+
+      onApprove(data, actions) {
+        const purchasedItems = Cart.items();
+        return actions.order.capture().then((details) => {
+          Cart.clear();
+          render();
+          close();
+          showConfirmation(details.id, purchasedItems);
+        });
+      },
+
+      onError(err) {
+        console.error('[AIShortFilmz] PayPal error:', err);
+        note.textContent = 'PayPal had a problem starting checkout. Please try again.';
+        note.classList.add('is-error');
+      },
+    }).render(paypalContainer).catch((err) => {
+      console.error('[AIShortFilmz] Could not render PayPal buttons:', err);
+      note.textContent = 'Checkout is temporarily unavailable. Please refresh and try again.';
+      note.classList.add('is-error');
+    });
+  }
+
+  render();
+  loadPaypalSdk(() => render());
+}
+
+/* ---------- PayPal SDK loader ---------- */
+function loadPaypalSdk(onReady) {
+  if (window.paypal) {
+    onReady();
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(CONFIG.paypalClientId)}&currency=${encodeURIComponent(CONFIG.currency)}&intent=capture`;
+  script.addEventListener('load', onReady);
+  script.addEventListener('error', () => {
+    const note = $('#cart-note');
+    if (note) {
+      note.textContent = 'PayPal could not load. Check your connection and refresh the page.';
+      note.classList.add('is-error');
+    }
+  });
+  document.head.appendChild(script);
+}
+
+/* ---------- Confirmation modal ---------- */
+function confirmItemHTML(product) {
+  const action = product.category === 'downloads'
+    ? `<a class="btn confirm-download" href="#" data-dummy-download>Download</a>`
+    : `<span class="confirm-item-note">On its way by email</span>`;
+
+  return `
+    <li class="confirm-item">
+      <span>
+        <span class="confirm-item-name">${product.name}</span>
+        <span class="confirm-item-note">${product.deliveryNote}</span>
+      </span>
+      ${action}
+    </li>`;
+}
+
+function showConfirmation(orderId, items) {
+  const overlay = $('#confirm-overlay');
+  const modal = $('#confirm-modal');
+  $('#confirm-id').textContent = orderId;
+  $('#confirm-items').innerHTML = items.map(confirmItemHTML).join('');
+
+  overlay.hidden = false;
+  modal.hidden = false;
+  modal.focus();
+  document.body.style.overflow = 'hidden';
+}
+
+function initConfirmModal() {
+  const overlay = $('#confirm-overlay');
+  const modal = $('#confirm-modal');
+  const closeBtn = $('#confirm-close');
+  if (!modal) return;
+
+  const close = () => {
+    overlay.hidden = true;
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.hidden) close();
+  });
+
+  // Dummy download links: in a real store these point at your file host or API.
+  modal.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-dummy-download]');
+    if (!link) return;
+    event.preventDefault();
+    link.textContent = 'Link placeholder';
   });
 }
 
@@ -369,6 +492,6 @@ function initPageLinks() {
 initYear();
 initNav();
 initPageLinks();
-initScrubber();
-initSteps();
-initForm();
+initGrids();
+initCart();
+initConfirmModal();
