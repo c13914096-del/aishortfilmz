@@ -26,8 +26,8 @@ const PRODUCTS = [
     meta: '2:40',
     name: 'Neon Skyline',
     description: 'A rain-lit chase through a synthetic city, told without a single word of dialogue.',
-    price: 49,
-    paymentLink: '',
+    price: 49.95,
+    paymentLink: 'https://pay.atexpay.com/p/u2SYym7YrP92',
   },
   {
     id: 'film-last-letter',
@@ -36,8 +36,8 @@ const PRODUCTS = [
     meta: '4:55',
     name: 'The Last Letter',
     description: 'A quiet family drama about a letter that arrives forty years too late.',
-    price: 69,
-    paymentLink: '',
+    price: 59.99,
+    paymentLink: 'https://pay.atexpay.com/p/JjvDJ1ZCMcMb',
   },
   {
     id: 'film-coffee-dreams',
@@ -77,7 +77,7 @@ const PRODUCTS = [
     name: 'AI Reels Bundle',
     description: '1000+ AI reels for Instagram and TikTok, covering trending formats.',
     price: 34.99,
-    paymentLink: '',
+    paymentLink: 'https://pay.atexpay.com/p/MlG2edoi8U8H',
   },
   {
     id: 'asset-prompts-bundle',
@@ -86,8 +86,8 @@ const PRODUCTS = [
     meta: '.txt',
     name: 'AI Prompts Bundle',
     description: '500+ curated prompts for AI image and video generation, organized by style.',
-    price: 15,
-    paymentLink: '',
+    price: 12.99,
+    paymentLink: 'https://pay.atexpay.com/p/UfDJpPBCzGQV',
   },
   {
     id: 'asset-kids-worksheets',
@@ -95,9 +95,9 @@ const PRODUCTS = [
     badge: 'Worksheets',
     meta: '.pdf',
     name: "Children's Drawing Worksheets Bundle",
-    description: '40 printable drawing and coloring worksheets, designed for early learners.',
-    price: 12,
-    paymentLink: '',
+    description: '100 printable drawing and coloring worksheets, designed for early learners.',
+    price: 19.99,
+    paymentLink: 'https://pay.atexpay.com/p/0LhQyi6jSNIh',
   },
   
   {
@@ -106,9 +106,9 @@ const PRODUCTS = [
     badge: 'Scripts',
     meta: '.docx',
     name: 'Faceless Video Script Pack',
-    description: '30 ready-to-record scripts for faceless YouTube and TikTok channels.',
-    price: 22,
-    paymentLink: '',
+    description: '50 ready-to-record scripts for faceless YouTube and TikTok channels.',
+    price: 29.99,
+    paymentLink: 'https://pay.atexpay.com/p/gFcDZZmqp2ay',
   },
 ];
 
