@@ -1,7 +1,7 @@
 /* ==========================================================================
-   AIShortFilmz — store
-   Tokens > Base > Layout > Header > Hero > Products > How it works
-   > Cart drawer > Confirmation modal > Footer > Motion
+   AIShortFilmz — storefront with payment-link checkout
+   Tokens > Base > Header > Hero > Products > How it works
+   > Contact form > Footer > Policy pages > Motion
    ========================================================================== */
 
 /* ---------- Tokens ---------- */
@@ -150,22 +150,12 @@ section[id] {
 }
 
 .btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+  opacity: 0.6;
+  cursor: progress;
 }
 
 .btn-block {
   width: 100%;
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--field-border);
-}
-
-.btn-ghost:hover {
-  background: var(--ink-3);
 }
 
 .text-link {
@@ -283,7 +273,8 @@ section[id] {
   border-bottom: 1px solid var(--line);
 }
 
-.site-nav.is-open {
+.site-nav.is-open,
+.site-nav.is-static {
   display: block;
 }
 
@@ -316,7 +307,6 @@ section[id] {
     padding: 0;
     background: none;
     border: 0;
-    margin-right: 1.5rem;
   }
 
   .site-nav ul {
@@ -328,44 +318,6 @@ section[id] {
   .site-nav a {
     padding: 0.4rem 0;
   }
-}
-
-.cart-toggle {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.cart-toggle:hover {
-  border-color: var(--field-border);
-}
-
-.cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  min-width: 1.2rem;
-  height: 1.2rem;
-  padding: 0 0.3rem;
-  display: inline-grid;
-  place-items: center;
-  background: var(--amber);
-  color: var(--amber-ink);
-  border-radius: 999px;
-  font: 700 0.7rem/1 var(--font-body);
-}
-
-.cart-count[data-empty="true"] {
-  display: none;
 }
 
 /* ---------- Hero ---------- */
@@ -397,16 +349,16 @@ section[id] {
 }
 
 .hero-title {
-  max-width: 20em;
+  max-width: 22em;
   margin-top: 0.85rem;
-  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-size: clamp(2.4rem, 6vw, 4rem);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.03em;
 }
 
 .hero-lead {
-  max-width: 38rem;
+  max-width: 40rem;
   margin-top: 1.25rem;
   color: var(--muted);
   font-size: clamp(1.05rem, 2vw, 1.2rem);
@@ -526,7 +478,7 @@ section[id] {
   backdrop-filter: blur(4px);
 }
 
-.product-duration {
+.product-meta {
   position: absolute;
   bottom: 0.75rem;
   right: 0.75rem;
@@ -570,15 +522,16 @@ section[id] {
   font: 700 1.3rem/1 var(--font-display);
 }
 
-.add-to-cart {
+.buy-now {
   padding: 0.6rem 1.1rem;
   font-size: 0.9rem;
 }
 
-.add-to-cart[data-added="true"] {
-  background: var(--ink-3);
-  color: var(--ok);
-  border: 1px solid var(--ok);
+/* Visual nudge for a product whose payment link hasn't been added yet in script.js */
+.buy-now[data-pending="true"] {
+  background: transparent;
+  color: var(--amber);
+  border: 1px dashed var(--amber);
 }
 
 /* ---------- How it works ---------- */
@@ -618,273 +571,186 @@ section[id] {
   }
 }
 
-/* ---------- Cart drawer ---------- */
-.cart-overlay,
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: rgba(8, 10, 26, 0.6);
-  backdrop-filter: blur(2px);
-}
-
-.cart-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 95;
-  width: min(24rem, 100%);
-  display: flex;
-  flex-direction: column;
-  background: var(--ink-2);
-  border-left: 1px solid var(--line);
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.cart-drawer.is-open {
-  transform: translateX(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cart-drawer {
-    transition: none;
-  }
-}
-
-.cart-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.cart-head h2 {
-  font-size: 1.3rem;
-}
-
-.cart-close {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  cursor: pointer;
-}
-
-/* The whole lower region (items + checkout) scrolls as one unit, so an
-   expanded PayPal card form always has room to scroll into view, including
-   its own submit button. Only the drawer header stays fixed. */
-.cart-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 1rem 1.5rem 1.5rem;
-}
-
-.cart-items {
-  display: grid;
-  gap: 1rem;
-}
-
-.cart-item {
-  display: grid;
-  grid-template-columns: 3.5rem 1fr auto;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.cart-item-thumb {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  color: rgba(13, 17, 40, 0.55);
-  font: 700 0.6rem/1 var(--font-display);
-  overflow: hidden;
-}
-
-.cart-item-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.cart-item-price {
-  color: var(--muted);
-  font-size: 0.875rem;
-  margin-top: 0.15rem;
-}
-
-.cart-item-remove {
-  justify-self: end;
-  background: none;
-  border: 0;
-  padding: 0.35rem;
-  color: var(--muted);
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.cart-item-remove:hover {
-  color: var(--danger);
-}
-
-.cart-empty {
-  display: none;
-  padding: 2rem 0;
-  color: var(--muted);
+/* ---------- Contact ---------- */
+.contact-card {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 3rem);
   text-align: center;
-}
-
-.cart-empty.is-visible {
-  display: block;
-}
-
-.cart-checkout {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
-}
-
-.cart-subtotal {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  font: 700 1.2rem/1 var(--font-display);
-}
-
-.cart-subtotal span:first-child {
-  font: 600 0.95rem/1 var(--font-body);
-  color: var(--muted);
-}
-
-.paypal-slot {
-  min-height: 2.75rem;
-}
-
-.paypal-slot[data-disabled="true"] {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-.cart-note {
-  margin-top: 0.85rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  text-align: center;
-}
-
-.cart-note.is-error {
-  color: var(--danger);
-}
-
-/* ---------- Confirmation modal ---------- */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 96;
-  width: min(28rem, calc(100% - 2.5rem));
-  max-height: calc(100vh - 3rem);
-  overflow-y: auto;
-  transform: translate(-50%, -50%);
-  padding: 2rem;
-  background: var(--ink-2);
+  background: var(--ink);
   border: 1px solid var(--line);
   border-radius: 16px;
 }
 
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+.contact-icon {
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  background: none;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--text);
-  cursor: pointer;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--ink-3);
+  border-radius: 50%;
+  color: var(--amber);
 }
 
-.modal h2 {
-  font-size: 1.6rem;
-  color: var(--ok);
-}
-
-.modal #confirm-sub {
-  margin-top: 0.6rem;
+.contact-card p {
+  margin: 1rem auto 0;
   color: var(--muted);
 }
 
-.confirm-items {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.confirm-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  background: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-
-.confirm-item-name {
-  font-weight: 600;
+.contact-card .contact-hint {
   font-size: 0.95rem;
 }
 
-.confirm-item-note {
-  color: var(--muted);
-  font-size: 0.8rem;
-  margin-top: 0.15rem;
-}
-
-.confirm-download {
-  flex-shrink: 0;
-  padding: 0.5rem 0.9rem;
-  font-size: 0.85rem;
-}
-
-.confirm-footnote {
-  margin-top: 1.5rem;
-  color: var(--muted);
-  font-size: 0.85rem;
+.contact-email {
+  margin-top: 1.75rem;
 }
 
 /* ---------- Footer ---------- */
 .site-footer {
-  padding-block: 2rem;
+  padding-block: 3rem 2rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.95rem;
 }
 
-.footer-inner {
+.footer-grid {
+  display: grid;
+  gap: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.footer-brand .brand {
+  font-size: 1.15rem;
+}
+
+.footer-brand p {
+  margin-top: 0.85rem;
+  max-width: 24rem;
+}
+
+.footer-links h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  margin-bottom: 0.9rem;
+}
+
+.footer-links ul {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.footer-links a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
+.footer-bottom {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem 2rem;
+  padding-top: 1.5rem;
 }
 
-.footer-inner a:hover {
+.footer-bottom a:hover {
   color: var(--text);
+}
+
+@media (min-width: 760px) {
+  .footer-grid {
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+}
+
+/* ---------- Policy pages ---------- */
+.policy-page {
+  padding-block: clamp(2.5rem, 6vw, 4rem) clamp(4rem, 8vw, 6rem);
+}
+
+.policy-container {
+  max-width: 44rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.policy-container h1 {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  margin-top: 0.5rem;
+}
+
+.policy-disclaimer {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--amber);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.925rem;
+  max-width: none;
+}
+
+.policy-container h2 {
+  font-size: 1.35rem;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.policy-container p,
+.policy-container li {
+  color: var(--muted);
+  max-width: none;
+}
+
+.policy-container p + p {
+  margin-top: 0.9rem;
+}
+
+.policy-container ul {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.policy-container li {
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.policy-container li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 0.5rem;
+  height: 2px;
+  background: var(--amber);
+}
+
+.policy-container a {
+  color: var(--amber);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.policy-updated {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 /* ---------- Motion ---------- */
